@@ -1,0 +1,18 @@
+version: '3.7'
+
+networks:
+  default:
+    name: localdev
+    external: true
+
+services:
+  deploy:
+    build:
+      context: ./
+    container_name: docker-webhook-deploy
+    networks:
+      - default
+    volumes:
+      - ./src:/opt/app
+    ports:
+      - 5000:5000
