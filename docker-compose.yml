@@ -1,18 +1,13 @@
 version: '3.7'
 
-networks:
-  default:
-    name: localdev
-    external: true
-
 services:
   deploy:
     build:
       context: ./
-    container_name: docker-webhook-deploy
-    networks:
-      - default
+    container_name: docker-deploy
     volumes:
-      - ./src:/opt/app
+      - ./src:/opt/deploy
     ports:
       - 5000:5000
+    environment:
+      FLASK_ENV: development

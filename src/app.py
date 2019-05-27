@@ -1,10 +1,10 @@
 #! /usr/bin/env python
 
-from flask import Flask, request, abort
+from flask import Flask, request
+from flask.json import jsonify as response
 from os import environ as env
-import json
 
-import vendors
+import translators
 from docker import deploy
 
 app = Flask('Docker Webhook Deploy')
@@ -13,15 +13,16 @@ app = Flask('Docker Webhook Deploy')
 # Main webhook route
 @app.route('/hooks/<vendor>', methods=['POST'])
 def hook(vendor):
+    app.logger.info('Calling webhook translator for {}'.format(vendor))
     try:
-        # Load payload from JSON data
-        payload = json.loads(request.data)
-        config = vendors[vendor](payload)
-    except Exception:
-        return abort(400)
+        config = getattr(translators, vendor)(request.data, request.args)
+    except Exception as error:
+        app.logger.error(error)
+        return response(success=False), 400
 
     # Run deployments in project directory
     deploy(config, env['PROJECTS_PATH'])
+    return response(success=True), 202
 
 
 if __name__ == '__main__':
