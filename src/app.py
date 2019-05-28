@@ -5,7 +5,7 @@ from flask.json import jsonify as response
 from os import environ as env
 
 import translators
-from docker import deploy
+from deploy import Deploy
 
 app = Flask('Docker Webhook Deploy')
 
@@ -21,7 +21,9 @@ def hook(vendor):
         return response(success=False), 400
 
     # Run deployments in project directory
-    deploy(config, env['PROJECTS_PATH'])
+    deploy = Deploy(env['PROJECTS_PATH'], app.logger)
+    deploy.run(config['repo'], config['tag'])
+
     return response(success=True), 202
 
 

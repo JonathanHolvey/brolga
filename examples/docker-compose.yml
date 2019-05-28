@@ -1,0 +1,11 @@
+version: '3.7'
+
+services:
+  apple:
+    image: jonathanholvey/apple-image:latest
+
+  orange:
+    image: jonathanholvey/orange-image:latest
+
+  banana:
+    image: jonathanholvey/banana-image:latest

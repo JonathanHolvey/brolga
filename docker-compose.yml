@@ -7,6 +7,7 @@ services:
     container_name: docker-deploy
     volumes:
       - ./src:/opt/deploy
+      - ./examples:/var/docker
     ports:
       - 5000:5000
     environment:
