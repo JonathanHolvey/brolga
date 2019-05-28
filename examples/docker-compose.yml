@@ -2,10 +2,10 @@ version: '3.7'
 
 services:
   apple:
-    image: jonathanholvey/apple-image:latest
+    image: svendowideit/testhook:latest
 
   orange:
-    image: jonathanholvey/orange-image:latest
+    image: svendowideit/testhook:2.1
 
   banana:
-    image: jonathanholvey/banana-image:latest
+    image: jonathanholvey/banana:latest

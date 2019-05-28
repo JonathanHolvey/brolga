@@ -1,7 +1,7 @@
 from glob import glob
 import os
 
-import yaml
+import docker
 
 """Handle deployment of pushed Docker images"""
 class Deploy:
@@ -13,30 +13,21 @@ class Deploy:
     """Run all deployments"""
     def run(self, repo, tag):
         image = '{}:{}'.format(repo, tag)
-        self.logger.info('Updating services using {}'.format(image))
 
         services = self.get_services(image)
+        self.logger.info('Updating services \'{}\' using {}'.format(
+            '\', \''.join([service['name'] for service in services]), image))
 
     """Scan Docker Compose files for matching services"""
     def get_services(self, image):
         self.logger.info('Loading Docker Compose files from {}'.format(self.path))
 
-        files = glob(self.pattern, recursive=True)
+        compose_files = [docker.Compose(file) for file in glob(self.pattern, recursive=True)]
 
         services = []
-        for filepath in files:
-            services.extend(self.parse_compose_file(filepath))
-
-    """Extract service and image names a from Docker Compose file"""
-    def parse_compose_file(self, filepath):
-        services = []
-        try:
-            with open(filepath, 'r') as stream:
-                data = yaml.safe_load(stream)
-        except yaml.YAMLError as error:
-            self.logger.error(error)
-
-        for name, service in data['services'].items():
-            services.append({'name': name, 'image': service['image']})
+        for file in compose_files:
+            for name, service in file.get_property('services').items():
+                if service['image'] == image:
+                    services.append({'file': file.filepath, 'name': name})
 
         return services
