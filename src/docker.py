@@ -1,6 +1,3 @@
-import os
-import re
-
 import yaml
 
 
@@ -39,14 +36,3 @@ class ComposeService:
         self.file = file
         self.name = name
         self.config = config
-
-    def get_id(self, strip=None):
-        """Create an ID from the compose file path and service name"""
-        folder = os.path.dirname(self.file)
-        service_id = os.path.join(folder, self.name)
-
-        if strip is None:
-            return service_id
-
-        pattern = r'^' + strip + os.sep
-        return re.sub(pattern, '', service_id)

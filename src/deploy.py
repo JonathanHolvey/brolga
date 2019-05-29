@@ -1,5 +1,6 @@
 from glob import glob
 import os
+import re
 
 import docker
 
@@ -19,7 +20,7 @@ class Deploy:
 
         services = self.get_services(image)
         self.logger.info('Updating services {} using {}'.format(
-            ', '.join(["'{}'".format(s.get_id(self.path)) for s in services]), image))
+            ', '.join(["'{}'".format(self.get_id(s)) for s in services]), image))
 
     def get_services(self, image):
         """Scan Docker Compose files for matching services"""
@@ -29,3 +30,11 @@ class Deploy:
 
         return [s for f in files for s in docker.ComposeFile(f).services()
                 if s.config.get('image') == image]
+
+    def get_id(self, service):
+        """Create an ID from the compose file path and service name"""
+        folder = os.path.dirname(service.file)
+        service_id = os.path.join(folder, service.name)
+
+        pattern = r'^' + self.path + os.sep
+        return re.sub(pattern, '', service_id)
