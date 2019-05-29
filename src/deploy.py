@@ -11,8 +11,6 @@ class Deploy:
     def __init__(self, path, logger):
         self.logger = logger
         self.path = path
-        self.compose_filename = 'docker-compose.yml'
-        self.pattern = os.path.join(path, '**', self.compose_filename)
 
     def run(self, repo, tag):
         """Run all deployments"""
@@ -26,7 +24,10 @@ class Deploy:
         """Scan Docker Compose files for matching services"""
         self.logger.info('Loading Docker Compose files from {}'.format(self.path))
 
-        files = glob(self.pattern, recursive=True)
+        filenames = ['docker-compose.yml', 'docker-compose.yaml']
+        patterns = [os.path.join(self.path, '**', f) for f in filenames]
+
+        files = [f for p in patterns for f in glob(p, recursive=True)]
 
         return [s for f in files for s in docker.ComposeFile(f).services()
                 if s.config.get('image') == image]
