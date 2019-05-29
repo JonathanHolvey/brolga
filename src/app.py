@@ -10,9 +10,10 @@ from deploy import Deploy
 app = Flask('Docker Webhook Deploy')
 
 
-# Main webhook route
 @app.route('/hooks/<vendor>', methods=['POST'])
 def hook(vendor):
+    """Main webhook route"""
+
     app.logger.info('Calling webhook translator for {}'.format(vendor))
     try:
         repo, tag, secret = getattr(translators, vendor)(request.data, request.args)

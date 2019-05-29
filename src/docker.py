@@ -1,10 +1,12 @@
 import os
+import re
 
 import yaml
 
 
 class ComposeFile:
     """Parse a Docker Compose file and provide access to the data within"""
+
     def __init__(self, file):
         self.file = file
         self.data = None
@@ -15,7 +17,7 @@ class ComposeFile:
         return self.data[key].items()
 
     def _read(self):
-        """Load the Docker Compose file into a dictionary"""
+        """Load the compose file into a dictionary"""
         if self.data is not None:
             return
         try:
@@ -32,12 +34,19 @@ class ComposeFile:
 
 class ComposeService:
     """Inspect and control Docker Compose services"""
+
     def __init__(self, file, name, config):
         self.file = file
         self.name = name
         self.config = config
 
-    def get_id(self, parent=''):
-        """Create a unique ID for a service"""
+    def get_id(self, strip=None):
+        """Create an ID from the compose file path and service name"""
         folder = os.path.dirname(self.file)
-        return os.path.join(folder, self.name)
+        service_id = os.path.join(folder, self.name)
+
+        if strip is None:
+            return service_id
+
+        pattern = r'^' + strip + os.sep
+        return re.sub(pattern, '', service_id)
