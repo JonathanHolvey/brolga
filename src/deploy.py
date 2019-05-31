@@ -15,10 +15,16 @@ class Deploy:
     def run(self, repo, tag):
         """Run all deployments"""
         image = '{}:{}'.format(repo, tag)
-
         services = self.get_services(image)
-        self.logger.info('Updating services {} using {}'.format(
-            ', '.join(["'{}'".format(self.get_id(s)) for s in services]), image))
+
+        for service in services:
+            service_id = self.get_id(service)
+            self.logger.info('Updating service {} using {}'.format(service_id, image))
+
+            try:
+                service.update()
+            except Exception as error:
+                self.logger.warning('Could not update {}. {}'.format(service_id, error))
 
     def get_services(self, image):
         """Scan Docker Compose files for matching services"""

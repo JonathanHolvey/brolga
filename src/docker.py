@@ -1,3 +1,4 @@
+from subprocess import run
 import yaml
 
 
@@ -33,6 +34,49 @@ class ComposeService:
     """Inspect and control Docker Compose services"""
 
     def __init__(self, file, name, config):
+        self.cli = ComposeCLI(file, name)
         self.file = file
         self.name = name
         self.config = config
+
+    def update(self):
+        if not self.cli.status():
+            raise Exception('The service is not running')
+
+
+class ComposeCLI:
+    """Wrapper for the Docker Compose CLI program"""
+
+    def __init__(self, file, name):
+        self.file = file
+        self.name = name
+
+    def status(self):
+        """Get the status of a service"""
+        count = len(self._run(['ps', '-q']))
+        if count > 1:
+            raise Exception('Ambiguous service when checking status')
+
+        return count == 1
+
+    def up(self):
+        """Start a service"""
+        return self._run(['up', '-d'])
+
+    def down(self):
+        """Stop a service"""
+        return self._run(['down'])
+
+    def pull(self):
+        """Pull an image for a service"""
+        return self._run(['pull'])
+
+    def _run(self, cmd):
+        """Run a Docker Compose command"""
+        result = run(['docker-compose', '-f', self.file, *cmd, self.name],
+                     capture_output=True)
+
+        if result.returncode != 0:
+            raise Exception(result.stderr)
+
+        return result.stdout.decode('utf-8').strip().splitlines()
