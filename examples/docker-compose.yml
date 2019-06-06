@@ -1,11 +1,15 @@
 version: '3.7'
 
 services:
-  apple:
-    image: svendowideit/testhook:latest
-
   orange:
-    image: svendowideit/testhook:2.1
+    image: alpine:latest
+    entrypoint:
+      - tail
+      - -f
+      - /etc/hostname
+
+  apple:
+    image: alpine:3.7
 
   banana:
-    image: jonathanholvey/banana:latest
+    image: alpine:3.8

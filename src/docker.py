@@ -8,6 +8,10 @@ class ComposeFile:
     def __init__(self, file):
         self.file = file
         self.data = None
+        self.cli = ComposeCLI(file)
+
+        self.services = [ComposeService(self.file, name, config)
+                         for name, config in self.parse('services')]
 
     def parse(self, key):
         """Parse a root property into an array of tuples"""
@@ -24,42 +28,37 @@ class ComposeFile:
         except yaml.YAMLError:
             raise Exception('An error occurred loading the Docker Compose file')
 
-    def services(self):
-        """Return an array of service objects"""
-        return [ComposeService(self.file, name, config)
-                for name, config in self.parse('services')]
+    def active(self):
+        """Check if a compose file has created containers"""
+        return self.cli.status()
+
+    def update(self, services):
+        """Pull images then restart all services"""
+        if self.cli.pull([s.name for s in services]):
+            self.cli.down() and self.cli.up()
+        return self.cli.status()
 
 
 class ComposeService:
-    """Inspect and control Docker Compose services"""
+    """Inspect Docker Compose services"""
 
     def __init__(self, file, name, config):
-        self.cli = ComposeCLI(file, name)
         self.file = file
         self.name = name
         self.config = config
-
-    def update(self):
-        if not self.cli.status():
-            raise Exception('The service is not running')
 
 
 class ComposeCLI:
     """Wrapper for the Docker Compose CLI program"""
 
-    def __init__(self, file, name):
+    def __init__(self, file):
         self.file = file
-        self.name = name
 
-    def status(self):
+    def status(self, service=''):
         """Get the status of a service"""
-        count = len(self._run(['ps', '-q']))
-        if count > 1:
-            raise Exception('Ambiguous service when checking status')
+        return len(self._run(['ps', '-q'])) > 0
 
-        return count == 1
-
-    def up(self):
+    def up(self, service=''):
         """Start a service"""
         return self._run(['up', '-d'])
 
@@ -67,13 +66,13 @@ class ComposeCLI:
         """Stop a service"""
         return self._run(['down'])
 
-    def pull(self):
+    def pull(self, services=[]):
         """Pull an image for a service"""
-        return self._run(['pull'])
+        return self._run(['pull', *services])
 
     def _run(self, cmd):
         """Run a Docker Compose command"""
-        result = run(['docker-compose', '-f', self.file, *cmd, self.name],
+        result = run(['docker-compose', '-f', self.file, *cmd],
                      capture_output=True)
 
         if result.returncode != 0:

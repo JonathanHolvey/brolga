@@ -15,33 +15,36 @@ class Deploy:
     def run(self, repo, tag):
         """Run all deployments"""
         image = '{}:{}'.format(repo, tag)
-        services = self.get_services(image)
+        compose_files = self.get_files()
 
-        for service in services:
-            service_id = self.get_id(service)
-            self.logger.info('Updating service {} using {}'.format(service_id, image))
+        for file in compose_files:
+            folder = self.get_path(file.file)
 
+            # Check that a serivce is using the image
+            services = [s for s in file.services if s.config.get('image') == image]
+            if not services or not file.active():
+                continue
+
+            self.logger.info('Updating services {} in {} using {}'
+                             .format(', '.join([s.name for s in services]), folder, image))
             try:
-                service.update()
+                file.update(services)
+                self.logger.info('Update complete')
             except Exception as error:
-                self.logger.warning('Could not update {}. {}'.format(service_id, error))
+                self.logger.warning('Could not update {}. {}'.format(folder, error))
 
-    def get_services(self, image):
-        """Scan Docker Compose files for matching services"""
+    def get_files(self):
+        """Scan folder for matching Docker Compose files"""
         self.logger.info('Loading Docker Compose files from {}'.format(self.path))
 
         filenames = ['docker-compose.yml', 'docker-compose.yaml']
         patterns = [os.path.join(self.path, '**', f) for f in filenames]
 
-        files = [f for p in patterns for f in glob(p, recursive=True)]
+        return [docker.ComposeFile(f) for p in patterns for f in glob(p, recursive=True)]
 
-        return [s for f in files for s in docker.ComposeFile(f).services()
-                if s.config.get('image') == image]
-
-    def get_id(self, service):
-        """Create an ID from the compose file path and service name"""
-        folder = os.path.dirname(service.file)
-        service_id = os.path.join(folder, service.name)
+    def get_path(self, file):
+        """Get the relative folder path for the specified Docker Compose file"""
+        folder = os.path.dirname(file)
 
         pattern = r'^' + self.path + os.sep
-        return re.sub(pattern, '', service_id)
+        return re.sub(pattern, '', folder)

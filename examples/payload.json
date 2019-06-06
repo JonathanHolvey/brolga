@@ -20,9 +20,9 @@
     "is_private": true,
     "is_trusted": true,
     "name": "testhook",
-    "namespace": "svendowideit",
+    "namespace": "",
     "owner": "svendowideit",
-    "repo_name": "svendowideit/testhook",
+    "repo_name": "alpine",
     "repo_url": "https://registry.hub.docker.com/u/svendowideit/testhook/",
     "star_count": 0,
     "status": "Active"
