@@ -13,9 +13,10 @@ class Deploy:
         self.path = path
 
     def run(self, repo, tag):
-        """Run all deployments"""
+        """Update all matching images in Docker Compose files"""
         image = '{}:{}'.format(repo, tag)
         compose_files = self.get_files()
+        matched = False
 
         for file in compose_files:
             folder = self.get_path(file.file)
@@ -25,13 +26,17 @@ class Deploy:
             if not services or not file.active():
                 continue
 
+            matched = True
             self.logger.info('Updating services {} in {} using {}'
                              .format(', '.join([s.name for s in services]), folder, image))
             try:
                 file.update(services)
-                self.logger.info('Update complete')
+                self.logger.info('Finished updating {}'.format(folder))
             except Exception as error:
                 self.logger.warning('Could not update {}. {}'.format(folder, error))
+
+        if not matched:
+            self.logger.info('No active services using {}'.format(image))
 
     def get_files(self):
         """Scan folder for matching Docker Compose files"""
