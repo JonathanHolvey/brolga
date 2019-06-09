@@ -3,6 +3,7 @@
 from flask import Flask, request
 from flask.json import jsonify as response
 from os import environ as env
+from threading import Thread
 
 import translators
 from hook import Hook
@@ -27,9 +28,10 @@ def hook(vendor):
     if not auth(hookdata.secret):
         return response(success=False), 401
 
-    # Run deployments in project directory
+    # Run deployments in project directory asynchronously
     deploy = Deploy(env['PROJECTS_PATH'], app.logger)
-    deploy.run(hookdata.repo, hookdata.tag)
+    thread = Thread(target=deploy.run, args=(hookdata.repo, hookdata.tag))
+    thread.start()
 
     return response(success=True), 202
 
