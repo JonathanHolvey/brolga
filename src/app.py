@@ -5,6 +5,7 @@ from flask.json import jsonify as response
 from os import environ as env
 
 import translators
+from hook import Hook
 from deploy import Deploy
 
 app = Flask('Docker Webhook Deploy')
@@ -14,20 +15,21 @@ app = Flask('Docker Webhook Deploy')
 def hook(vendor):
     """Main webhook route"""
 
-    app.logger.info('Calling webhook translator for {}'.format(vendor))
+    translator = getattr(translators, vendor)()
+    app.logger.info('Calling webhook translator for {}'.format(translator.name))
     try:
-        repo, tag, secret = getattr(translators, vendor)(request)
+        hookdata = Hook(*translator.readhook(request))
     except Exception as error:
-        app.logger.error(error)
+        app.logger.error('Could not read hook data: {}'.format(error))
         return response(success=False), 400
 
     # Check for valid secret
-    if not auth(secret):
+    if not auth(hookdata.secret):
         return response(success=False), 401
 
     # Run deployments in project directory
     deploy = Deploy(env['PROJECTS_PATH'], app.logger)
-    deploy.run(repo, tag)
+    deploy.run(hookdata.repo, hookdata.tag)
 
     return response(success=True), 202
 
