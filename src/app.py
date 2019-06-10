@@ -11,7 +11,7 @@ from deploy import Deploy
 app = Flask('Docker Webhook Deploy')
 
 
-@app.route('/hooks/<vendor>', methods=['POST'])
+@app.route('/hooks/<vendor>', methods=['GET', 'POST'])
 def hook_controller(vendor):
     """Main webhook route"""
 
