@@ -16,7 +16,7 @@ class Deploy:
         """Update all matching images in Docker Compose files"""
         image = '{}:{}'.format(hook.repo, hook.tag)
         compose_files = self.get_files()
-        matched = False
+        result = DeployResult()
 
         for file in compose_files:
             folder = self.get_path(file.file)
@@ -26,16 +26,17 @@ class Deploy:
             if not services or not file.active():
                 continue
 
-            matched = True
             self.logger.info('Updating services {} in {} using {}'
                              .format(', '.join([s.name for s in services]), folder, image))
             try:
                 file.update(services)
+                result.success(services)
                 self.logger.info('Finished updating {}'.format(folder))
             except Exception as error:
+                result.error(services)
                 self.logger.warning('Could not update {}. {}'.format(folder, error))
 
-        if not matched:
+        if not result.matched():
             self.logger.info('No active services using {}'.format(image))
 
     def get_files(self):
@@ -53,3 +54,22 @@ class Deploy:
 
         pattern = r'^' + self.path + os.sep
         return re.sub(pattern, '', folder)
+
+
+class DeployResult:
+    """Accumilate the status of deployed services"""
+
+    failed = []
+    deployed = []
+
+    def error(self, services):
+        """Mark services as failed"""
+        self.failed.extend(services)
+
+    def success(self, services):
+        """Mark services as deployed"""
+        self.deployed.extend(services)
+
+    def matched(self):
+        """Check if any services were marked"""
+        return self.failed or self.deployed
