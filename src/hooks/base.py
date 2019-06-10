@@ -1,5 +1,5 @@
 class BaseHook:
-    """Base webhook for extending"""
+    """Base webhook handler for extending"""
     repo = None
     tag = None
     secret = None

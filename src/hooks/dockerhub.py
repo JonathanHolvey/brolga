@@ -5,7 +5,7 @@ from .base import BaseHook
 
 
 class Dockerhub(BaseHook):
-    """Webhook translator for Dockerhub"""
+    """Webhook handler for Dockerhub"""
 
     def __init__(self):
         self.name = 'Dockerhub'

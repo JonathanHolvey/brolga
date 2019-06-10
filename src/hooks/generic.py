@@ -2,7 +2,7 @@ from .base import BaseHook
 
 
 class Generic(BaseHook):
-    """Generic webhook translator"""
+    """Generic webhook handler"""
 
     def __init__(self):
         self.name = 'generic'
