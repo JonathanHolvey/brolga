@@ -39,6 +39,8 @@ class Deploy:
         if not result.matched():
             self.logger.info('No active services using {}'.format(image))
 
+        hook.done(result)
+
     def get_files(self):
         """Scan folder for matching Docker Compose files"""
         self.logger.info('Loading Docker Compose files from {}'.format(self.path))
