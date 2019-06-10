@@ -12,9 +12,9 @@ class Deploy:
         self.logger = logger
         self.path = path
 
-    def run(self, repo, tag):
+    def run(self, hook):
         """Update all matching images in Docker Compose files"""
-        image = '{}:{}'.format(repo, tag)
+        image = '{}:{}'.format(hook.repo, hook.tag)
         compose_files = self.get_files()
         matched = False
 
