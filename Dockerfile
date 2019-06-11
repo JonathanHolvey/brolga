@@ -13,5 +13,7 @@ RUN pipenv install
 
 COPY src ../deploy
 
+EXPOSE 80
+
 ENTRYPOINT ["pipenv", "run"]
 CMD ["app"]

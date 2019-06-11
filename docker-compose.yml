@@ -11,6 +11,6 @@ services:
       - ./config/secrets:/etc/secrets
       - ./examples:/var/docker/examples
     ports:
-      - 5000:5000
+      - 8080:80
     environment:
       FLASK_ENV: development
