@@ -10,4 +10,4 @@ class Generic(BaseHook):
     def read(self, request):
         self.repo = request.args.get('repo')
         self.tag = request.args.get('tag')
-        self.secret = request.args.get('secret')
+        self.key = request.args.get('key')

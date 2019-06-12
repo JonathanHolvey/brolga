@@ -3,12 +3,15 @@
 from flask import Flask, request
 from flask.json import jsonify as response
 from os import environ as env
+from os import path
 from threading import Thread
 
 import hooks
 from deploy import Deploy
+from keys import Keystore
 
 app = Flask('Docker Webhook Deploy')
+auth = Keystore(path.join(env['CONFIG_PATH'], 'keys'))
 
 
 @app.route('/hooks/<vendor>', methods=['GET', 'POST'])
@@ -24,7 +27,7 @@ def hook_controller(vendor):
         return response(success=False), 400
 
     # Check for valid secret
-    if not auth(hook.secret):
+    if not auth.verify(hook.key):
         return response(success=False), 401
 
     # Run deployments in project directory asynchronously
@@ -33,16 +36,6 @@ def hook_controller(vendor):
     thread.start()
 
     return response(success=True), 202
-
-
-def auth(secret):
-    """Validate a secret against the secrets file"""
-    try:
-        with open(env['SECRETS_FILE'], 'r') as f:
-            secrets = f.read().splitlines()
-        return secret in secrets
-    except FileNotFoundError:
-        return False
 
 
 if __name__ == '__main__':

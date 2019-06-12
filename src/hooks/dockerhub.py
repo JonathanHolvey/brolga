@@ -14,7 +14,7 @@ class Dockerhub(BaseHook):
         payload = json.loads(request.data)
         self.repo = payload['repository']['repo_name']
         self.tag = payload['push_data']['tag']
-        self.secret = request.args.get('secret')
+        self.key = request.args.get('key')
         self.callback_url = payload['callback_url']
 
     def done(self, result):

@@ -8,7 +8,6 @@ services:
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - ./src:/opt/deploy
-      - ./config/secrets:/etc/secrets
       - ./examples:/var/docker/examples
     ports:
       - 8080:80
