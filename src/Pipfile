@@ -10,9 +10,11 @@ flask = "*"
 pyyaml = "*"
 requests = "*"
 passlib = "*"
+docopt = "*"
+tabulate = "*"
 
 [requires]
 python_version = "3.7"
 
 [scripts]
-app = "python /opt/deploy/app.py"
+app = "python $APP_PATH/app.py"

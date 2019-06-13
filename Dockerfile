@@ -1,12 +1,13 @@
 FROM python:3.7-alpine
 
-ENV DOCKER_HOST unix:///tmp/docker.sock
-ENV APP_PATH /opt/deploy
-ENV CONFIG_PATH /etc/deploy
-ENV PROJECTS_PATH /var/docker
+RUN apk add libffi-dev openssl-dev gcc libc-dev make \
+    && pip install pipenv docker-compose
 
-RUN apk add libffi-dev openssl-dev gcc libc-dev make
-RUN pip install pipenv docker-compose
+ENV DOCKER_HOST=unix:///tmp/docker.sock \
+    APP_PATH=/opt/deploy \
+    CONFIG_PATH=/etc/deploy \
+    PROJECTS_PATH=/var/docker \
+    PYTHONPATH=$PYTHONPATH:$APP_PATH
 
 WORKDIR $APP_PATH
 COPY src/Pipfile* ./

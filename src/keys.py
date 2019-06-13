@@ -49,11 +49,6 @@ class Keystore:
         except KeyError:
             return False
 
-    def list(self):
-        """Print the ID and name of every key"""
-        for key_id, key in self.keys.items():
-            print('{} {}'.format(key_id, key['name']))
-
     def verify(self, key):
         """Verify a key against its stored hash"""
         key_id, key_value = key[:self.ID_LENGTH], key[self.ID_LENGTH:]
