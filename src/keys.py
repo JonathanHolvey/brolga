@@ -9,7 +9,7 @@ class Keystore:
     """Key storage and management"""
 
     KEY_LENGTH = 32
-    ID_LENGTH = 4
+    ID_LENGTH = 5
 
     def __init__(self, filepath):
         self.file = filepath
@@ -36,10 +36,10 @@ class Keystore:
         key_id = None
 
         while key_id is None or key_id in self.keys.keys():
-            key_id = self.random(self.ID_LENGTH)
+            key_id = self.random(self.ID_LENGTH).lower()
 
         self.keys[key_id] = {'hash': key_hash, 'name': name}
-        return key_id + key_value
+        return '{}-{}'.format(key_id, key_value)
 
     def delete(self, key_id):
         """Delete a key by its ID"""
@@ -51,7 +51,7 @@ class Keystore:
 
     def verify(self, key):
         """Verify a key against its stored hash"""
-        key_id, key_value = key[:self.ID_LENGTH], key[self.ID_LENGTH:]
+        key_id, key_value = key.split('-')
         key_hash = self.keys.get(key_id, {}).get('hash')
         return crypt.verify(key_value, key_hash)
 
