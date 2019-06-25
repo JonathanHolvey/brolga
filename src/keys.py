@@ -70,8 +70,11 @@ class Keystore:
 
     def timestamp(self, key_id):
         """Set the last used time of a key"""
-        self.keys[key_id]['used'] = datetime.now()
-        self.save()
+        try:
+            self.keys[key_id]['used'] = datetime.now()
+            self.save()
+        except KeyError:
+            pass
 
     def random(self, length):
         """Generate a random string of letters and numbers"""
