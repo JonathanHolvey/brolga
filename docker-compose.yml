@@ -1,13 +1,13 @@
 version: '3.7'
 
 services:
-  deploy:
+  web:
     build:
       context: ./
-    container_name: docker-deploy
+    container_name: brolga
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
-      - ./src:/opt/deploy
+      - ./src:/opt/brolga
       - ./examples:/var/docker/examples
     ports:
       - 8080:80
