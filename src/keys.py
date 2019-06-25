@@ -63,10 +63,13 @@ class Keystore:
 
     def verify(self, key):
         """Verify a key against its stored hash"""
-        key_id, key_value = key.split('-')
-        key_hash = self.keys.get(key_id, {}).get('hash')
-        self.timestamp(key_id)
-        return crypt.verify(key_value, key_hash)
+        try:
+            key_id, key_value = key.split('-')
+            key_hash = self.keys[key_id]['hash']
+            self.timestamp(key_id)
+            return crypt.verify(key_value, key_hash)
+        except (ValueError, KeyError):
+            return False
 
     def timestamp(self, key_id):
         """Set the last used time of a key"""
