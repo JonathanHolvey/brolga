@@ -6,8 +6,7 @@ RUN apk add libffi-dev openssl-dev gcc libc-dev make \
 ENV DOCKER_HOST=unix:///tmp/docker.sock \
     APP_PATH=/opt/deploy \
     CONFIG_PATH=/etc/deploy \
-    PROJECTS_PATH=/var/docker \
-    PYTHONPATH=$PYTHONPATH:$APP_PATH
+    PROJECTS_PATH=/var/docker
 
 WORKDIR $APP_PATH
 COPY src/Pipfile* ./

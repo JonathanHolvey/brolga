@@ -1,2 +1,2 @@
 #! /usr/bin/env sh
-(cd $APP_PATH && exec pipenv run python "$@")
+(export PYTHONPATH=$PYTHONPATH:$APP_PATH && cd $APP_PATH && exec pipenv run python "$@")
