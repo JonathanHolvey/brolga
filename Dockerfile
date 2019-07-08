@@ -1,5 +1,8 @@
 FROM python:3.7-alpine
 
+LABEL maintaner=jonathan.holvey@outlook.com
+LABEL version=1.0.0-beta
+
 RUN apk add libffi-dev openssl-dev gcc libc-dev make \
     && pip install pipenv docker-compose
 
