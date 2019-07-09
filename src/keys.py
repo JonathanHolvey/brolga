@@ -68,7 +68,7 @@ class Keystore:
             key_hash = self.keys[key_id]['hash']
             self.timestamp(key_id)
             return crypt.verify(key_value, key_hash)
-        except (ValueError, KeyError):
+        except (ValueError, KeyError, AttributeError):
             return False
 
     def timestamp(self, key_id):
