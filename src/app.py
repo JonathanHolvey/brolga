@@ -24,18 +24,18 @@ def hook_controller(vendor):
         hook.read(request)
     except Exception as error:
         app.logger.error('Could not read hook data: {}'.format(error))
-        return response(success=False), 400
+        return response(success=False, message='Client error'), 400
 
     # Check for valid secret
     if not auth.verify(hook.key):
-        return response(success=False), 401
+        return response(success=False, message='Access denied'), 401
 
     # Run deployments in project directory asynchronously
     deploy = Deploy(env['PROJECTS_PATH'], app.logger)
     thread = Thread(target=deploy.run, args=(hook,))
     thread.start()
 
-    return response(success=True), 202
+    return response(success=True, message='Deployment scheduled'), 202
 
 
 if __name__ == '__main__':

@@ -8,6 +8,6 @@ class Generic(BaseHook):
         self.name = 'generic'
 
     def read(self, request):
-        self.repo = request.args.get('repo')
-        self.tag = request.args.get('tag')
-        self.key = request.args.get('key')
+        self.repo = request.args['repo']
+        self.tag = request.args['tag']
+        self.key = request.args['key']
