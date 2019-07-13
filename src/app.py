@@ -24,7 +24,7 @@ def hook_controller(vendor):
         hook.read(request)
     except Exception as error:
         app.logger.error('Could not read hook data: {}'.format(error))
-        return response(success=False, message='Client error'), 400
+        return response(success=False, message='Invalid request'), 400
 
     # Check for valid secret
     if not auth.verify(hook.key):

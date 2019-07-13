@@ -26,8 +26,9 @@ class Deploy:
             if not services or not file.active():
                 continue
 
-            self.logger.info('Updating services {} in {} using {}'
-                             .format(', '.join([s.name for s in services]), folder, image))
+            self.logger.info('Updating {} {} {} in {} using {}'.format(
+                len(services), 'service' if len(services) == 1 else 'services',
+                ', '.join([s.name for s in services]), folder, image))
             try:
                 file.update(services)
                 result.success(services)

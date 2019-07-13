@@ -23,6 +23,7 @@ services:
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - /var/docker:/var/docker # Projects volume (see below)
+      - ./config:/etc/opt/brolga
     ports:
       - '8080:80'
 ```
@@ -52,7 +53,7 @@ A command line tool Keystore is provided for managing secret keys. Generate a ke
 docker exec brolga keystore add <name>
 ```
 
-Once the key has been generated, it can be added to the webhook. Usually, the key can be specified with a `key` parameter in the request URL.
+Once the key has been generated, it can be added to the webhook. Usually, the key can be specified with a `key` parameter in the request URL. Note that the Brolga container must be restarted before a new key can be used.
 
 Note that after generating a key, it is impossible to retrieve it again. If a key is forgotten or lost, a replacement will have to be generated.
 
