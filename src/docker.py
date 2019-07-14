@@ -35,7 +35,8 @@ class ComposeFile:
     def update(self, services):
         """Pull images then restart all services"""
         if self.cli.pull([s.name for s in services]):
-            self.cli.down() and self.cli.up()
+            self.cli.down()
+            self.cli.up()
         return self.cli.status()
 
 
@@ -56,19 +57,20 @@ class ComposeCLI:
 
     def status(self, service=''):
         """Get the status of a service"""
-        return len(self._run(['ps', '-q'])) > 0
+        return len(self._run(['ps', '-q']).splitlines()) > 0
 
     def up(self, service=''):
         """Start a service"""
-        return self._run(['up', '-d'])
+        self._run(['up', '-d'])
 
     def down(self):
         """Stop a service"""
-        return self._run(['down'])
+        self._run(['down'])
 
     def pull(self, services=[]):
-        """Pull an image for a service"""
-        return self._run(['pull', *services])
+        """Check for new images and return True if downloaded"""
+        output = self._run(['pull', *services])
+        return 'downloaded newer image' in output
 
     def _run(self, cmd):
         """Run a Docker Compose command"""
@@ -78,4 +80,4 @@ class ComposeCLI:
         if result.returncode != 0:
             raise Exception(result.stderr)
 
-        return result.stdout.decode('utf-8').strip().splitlines()
+        return (result.stdout or result.stderr).decode('utf-8').strip()
