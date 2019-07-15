@@ -1,15 +1,6 @@
 version: '3.7'
 
 services:
-  orange:
-    image: alpine:latest
-    entrypoint:
-      - tail
-      - -f
-      - /etc/hostname
-
-  apple:
-    image: alpine:3.7
-
-  banana:
-    image: alpine:3.8
+  web:
+    image: rocketchilli/deploy-test:latest
+    container_name: deploy-test
