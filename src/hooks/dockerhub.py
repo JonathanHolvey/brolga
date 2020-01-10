@@ -19,5 +19,5 @@ class Dockerhub(BaseHook):
 
     def done(self, result):
         """Post status to callback URL"""
-        state = 'error' if result.error() else 'success' if result.success() else 'failure'
+        state = 'error' if result['failed'] else 'success' if result['deployed'] else 'failure'
         requests.post(self.callback_url, json={'state': state})
