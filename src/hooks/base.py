@@ -2,7 +2,7 @@ class BaseHook:
     """Base webhook handler for extending"""
     repo = None
     tag = None
-    secret = None
+    key = None
     name = ''
 
     def __init__(self):
