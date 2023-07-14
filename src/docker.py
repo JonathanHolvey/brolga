@@ -33,9 +33,8 @@ class ComposeFile:
         return self.cli.status()
 
     def update(self, services):
-        """Pull images then restart all services"""
+        """Pull images then restart any changed services"""
         if self.cli.pull([s.name for s in services]):
-            self.cli.down()
             self.cli.up()
         return self.cli.status()
 
