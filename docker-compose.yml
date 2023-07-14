@@ -4,6 +4,7 @@ services:
   web:
     build:
       context: ./
+    image: jonathanholvey/brolga:${DOCKER_TAG}
     container_name: brolga
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
